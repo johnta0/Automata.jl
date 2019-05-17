@@ -1,3 +1,4 @@
+using Printf
 
 struct Automaton
     states::Set # arbitrary set
@@ -13,7 +14,7 @@ DFA: Deterministic Finite Automata
 
 M = (Q, Σ, δ, q0, F)
 Q: set of states
-Σ: input alphabets
+Σ: s.alphabets
 δ: transition function
 q0: initial state
 F: final state
@@ -23,11 +24,11 @@ struct DeterministicFiniteAutomaton <: Automaton
 end
 
 function DeterministicFiniteAutomaton(
-    states::Set,
-    alphabets::Set{Char},
+    states::Set{Any},
+    alphabets::Set{String},
     transitions::Dict,
     initstate,
-    finalstates,
+    finalstates::Set{Any},
 )
     return DeterministicFiniteAutomaton(
 
@@ -38,6 +39,15 @@ function judge(dfa::DeterministicFiniteAutomaton, inputstring::string)
     """
         TODO: 状態を遷移させていき、最後の状態が final state に含まれるかどうかの boolean を返す
     """
+    state = dfa.initstate
+    for char in inputstring
+        if !(char in dfa.alphabets)
+            @printf("Error: invalid character: %s", char)
+            return -1
+        end
+        state = dfa.transitions[state][char]
+    end
+    return state in dfa.finalstates # Bool
 end
 
 
